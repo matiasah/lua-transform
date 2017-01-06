@@ -186,8 +186,12 @@ end
 -- @description: Sets the local position of a transform
 function Transform:SetLocalPosition(x, y)
 	
-	self.x, self.y = x, y
-	self:Change()
+	if x ~= self.x or y ~= self.y then
+		
+		self.x, self.y = x, y
+		self:Change()
+		
+	end
 	
 end
 
