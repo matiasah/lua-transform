@@ -45,39 +45,71 @@ end
 -- @description: Sets the local rotation of a transform
 function Transform:SetLocalRotation(Angle)
 	
+	while Angle < -180 do
+		
+		Angle = Angle + 360
+		
+	end
+	
+	while Angle > 180 do
+		
+		Angle = Angle - 360
+		
+	end
+	
 	if Angle ~= self.Rotation then
 		
 		self.Rotation = Angle
 		self.Radians = math.rad(Angle)
 		
-		local Cosine = math.cos(self.Radians)
-		local Sine = math.sin(self.Radians)
+		if Angle == 0 then
+			
+			self.Matrix = {
+				
+				{1, 0},
+				{0, 1},
+				
+			}
+			
+			self.InverseMatrix = {
+				
+				{1, 0},
+				{0, 1},
+				
+			}
+			
+		else
 		
-		-- The transformation matrix
-		self.Matrix = {
+			local Cosine = math.cos(self.Radians)
+			local Sine = math.sin(self.Radians)
 			
-			{ Cosine, Sine },
-			{ -Sine, Cosine },
+			-- The transformation matrix
+			self.Matrix = {
+				
+				{ Cosine, Sine },
+				{ -Sine, Cosine },
+				
+			}
 			
-		}
-		
-		local Secant = 1 / Cosine
-		local Cosecant = 1 / Sine
-		
-		-- The inverse transformation matrix
-		self.InverseMatrix = {
+			local Secant = 1 / Cosine
+			local Cosecant = 1 / Sine
 			
-			{
-				Secant + ( Secant / ( -Cosine * Cosecant - Sine * Secant ) ) * Sine * Secant,
-				Cosecant / ( -Cosine * Cosecant - Sine * Secant ) * Sine * Secant
-			},
+			-- The inverse transformation matrix
+			self.InverseMatrix = {
+				
+				{
+					Secant + ( Secant / ( -Cosine * Cosecant - Sine * Secant ) ) * Sine * Secant,
+					Cosecant / ( -Cosine * Cosecant - Sine * Secant ) * Sine * Secant
+				},
+				
+				{
+					-Secant / (-Cosine * Cosecant - Sine * Secant),
+					-Cosecant / ( -Cosine * Cosecant - Sine * Secant )
+				},
+				
+			}
 			
-			{
-				-Secant / (-Cosine * Cosecant - Sine * Secant),
-				-Cosecant / ( -Cosine * Cosecant - Sine * Secant )
-			},
-			
-		}
+		end
 		
 	end
 	
@@ -99,7 +131,7 @@ function Transform:SetRotation(Angle)
 		
 	end
 	
-	self.Rotation = Angle
+	self:SetLocalRotation(Angle)
 	
 end
 
