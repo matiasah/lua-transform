@@ -297,3 +297,5 @@ function Transform:ToLocalAngle(Angle)
 	return Rotation
 	
 end
+
+return Transform
