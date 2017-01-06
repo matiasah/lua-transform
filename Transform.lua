@@ -19,6 +19,12 @@ end
 -- @description: Assigns a transform as a parent of another transform
 function Transform:SetParent(Parent)
 	
+	if self.Parent then
+		
+		self.Parent.Children[ self.ID ] = nil
+		
+	end
+	
 	if Parent then
 		
 		self.ID = #Parent.Children + 1
@@ -39,6 +45,19 @@ end
 function Transform:GetParent()
 	
 	return self.Parent
+	
+end
+
+-- @description: Tells the children that the transform has changed
+function Transform:Change()
+	
+	self.HasChanged = true
+	
+	for ID, Child in pairs(self.Children) do
+		
+		Child:Change()
+		
+	end
 	
 end
 
@@ -111,6 +130,8 @@ function Transform:SetLocalRotation(Angle)
 			
 		end
 		
+		self:Change()
+		
 	end
 	
 end
@@ -166,6 +187,7 @@ end
 function Transform:SetLocalPosition(x, y)
 	
 	self.x, self.y = x, y
+	self:Change()
 	
 end
 
@@ -185,7 +207,7 @@ function Transform:SetPosition(x, y)
 		
 	end
 	
-	self.x, self.y = x, y
+	self:SetLocalPosition(x, y)
 	
 end
 
