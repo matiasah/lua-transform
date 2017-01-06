@@ -2,7 +2,7 @@
 
 Transform = {}
 Transform.__index = Transform
-Transform.x, Transform.y = 0, 0
+Transform.x, Transform.y, Transform.z = 0, 0, 0
 
 -- @description: Creates a new transformation
 function Transform:new()
@@ -184,11 +184,11 @@ function Transform:GetRotation()
 end
 
 -- @description: Sets the local position of a transform
-function Transform:SetLocalPosition(x, y)
+function Transform:SetLocalPosition(x, y, z)
 	
-	if x ~= self.x or y ~= self.y then
+	if x ~= self.x or y ~= self.y or z ~= self.z then
 		
-		self.x, self.y = x, y
+		self.x, self.y, self.z = x, y, z
 		self:Change()
 		
 	end
@@ -198,20 +198,20 @@ end
 -- @description: Gets the local position of a transform
 function Transform:GetLocalPosition()
 	
-	return self.x, self.y
+	return self.x, self.y, self.z
 	
 end
 
 -- @description: Sets the position of a transform
-function Transform:SetPosition(x, y)
+function Transform:SetPosition(x, y, z)
 	
 	if self.Parent then
 		
-		x, y = self.Parent:ToLocal(x, y)
+		x, y, z = self.Parent:ToLocal(x, y, z)
 		
 	end
 	
-	self:SetLocalPosition(x, y)
+	self:SetLocalPosition(x, y, z)
 	
 end
 
@@ -220,39 +220,39 @@ function Transform:GetPosition()
 	
 	if self.Parent then
 		
-		return self.Parent:ToWorld(self.x, self.y)
+		return self.Parent:ToWorld(self.x, self.y, self.z)
 		
 	end
 	
-	return self.x, self.y
+	return self.x, self.y, self.z
 	
 end
 
 -- @description: Transforms a point to world coordinates
-function Transform:ToWorld(x, y)
+function Transform:ToWorld(x, y, z)
 	
 	if self.Parent then
 		
-		return self.Parent:ToWorld( self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y )
+		return self.Parent:ToWorld( self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + z )
 		
 	end
 	
-	return self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y
+	return self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + z
 	
 end
 
 -- @description: Transforms a point to local coordinates
-function Transform:ToLocal(x, y)
+function Transform:ToLocal(x, y, z)
 	
 	if self.Parent then
 		
-		x, y = self.Parent:ToLocal(x, y)
+		x, y = self.Parent:ToLocal(x, y, z)
 		
 	end
 	
-	x, y = x - self.x, y - self.y
+	x, y, z = x - self.x, y - self.y, z - self.z
 	
-	return self.InverseMatrix[1][1] * x + self.InverseMatrix[1][2] * y, self.InverseMatrix[2][1] * x + self.InverseMatrix[2][2] * y
+	return self.InverseMatrix[1][1] * x + self.InverseMatrix[1][2] * y, self.InverseMatrix[2][1] * x + self.InverseMatrix[2][2] * y, z
 	
 end
 
