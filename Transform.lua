@@ -140,7 +140,21 @@ function Transform:GetRotation()
 	
 	if self.Parent then
 		
-		return self.Rotation + self.Parent:GetRotation()
+		local Rotation = self.Rotation + self.Parent:GetRotation()
+		
+		while Rotation < -180 do
+			
+			Rotation = Rotation + 360
+			
+		end
+		
+		while Rotation > 180 do
+			
+			Rotation = Rotation - 360
+			
+		end
+		
+		return Rotation
 		
 	end
 	
@@ -213,5 +227,47 @@ function Transform:ToLocal(x, y)
 	x, y = x - self.x, y - self.y
 	
 	return self.InverseMatrix[1][1] * x + self.InverseMatrix[1][2] * y, self.InverseMatrix[2][1] * x + self.InverseMatrix[2][2] * y
+	
+end
+
+-- @description: Transform a local angle to world
+function Transform:ToWorldAngle(Angle)
+	
+	local Rotation = Angle + self:GetRotation()
+	
+	while Rotation < -180 do
+		
+		Rotation = Rotation + 360
+		
+	end
+	
+	while Rotation > 180 do
+		
+		Rotation = Rotation - 360
+		
+	end
+	
+	return Rotation
+	
+end
+
+-- @description: Transform a world angle to local
+function Transform:ToLocalAngle(Angle)
+	
+	local Rotation = Angle - self:GetRotation()
+	
+	while Rotation < -180 do
+		
+		Rotation = Rotation + 360
+		
+	end
+	
+	while Rotation > 180 do
+		
+		Rotation = Rotation - 360
+		
+	end
+	
+	return Rotation
 	
 end
