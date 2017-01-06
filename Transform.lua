@@ -188,7 +188,13 @@ function Transform:SetLocalPosition(x, y, z)
 	
 	if x ~= self.x or y ~= self.y or z ~= self.z then
 		
-		self.x, self.y, self.z = x, y, z
+		if z then
+			
+			self.z = z
+			
+		end
+		
+		self.x, self.y = x, y
 		self:Change()
 		
 	end
