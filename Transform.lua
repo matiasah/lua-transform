@@ -132,6 +132,8 @@ function Transform:SetLocalRotation(Angle)
 		
 		self:Change()
 		
+		return true
+		
 	end
 	
 end
@@ -152,7 +154,7 @@ function Transform:SetRotation(Angle)
 		
 	end
 	
-	self:SetLocalRotation(Angle)
+	return self:SetLocalRotation(Angle)
 	
 end
 
@@ -197,7 +199,11 @@ function Transform:SetLocalPosition(x, y, z)
 		self.x, self.y = x, y
 		self:Change()
 		
+		return true
+		
 	end
+	
+	return false
 	
 end
 
@@ -217,7 +223,7 @@ function Transform:SetPosition(x, y, z)
 		
 	end
 	
-	self:SetLocalPosition(x, y, z)
+	return self:SetLocalPosition(x, y, z)
 	
 end
 
@@ -234,16 +240,55 @@ function Transform:GetPosition()
 	
 end
 
+-- @description: Gets the position of a transform as a vector
+function Transform:GetPositionVector()
+	
+	if self.Parent then
+		
+		local x, y, z = self.Parent:ToWorld(self.x, self.y, self.z)
+		
+		return {x = x, y = y, z = z}
+		
+	end
+	
+	return {x = self.x, y = self.y, z = self.z}
+	
+end
+
 -- @description: Transforms a point to world coordinates
 function Transform:ToWorld(x, y, z)
 	
 	if self.Parent then
 		
-		return self.Parent:ToWorld( self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + z )
+		return self.Parent:ToWorld( self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + ( z or 0 ) )
 		
 	end
 	
-	return self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + z
+	return self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y, self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y, self.z + ( z or 0 )
+	
+end
+
+-- @description: Transform multiple points to world coordinates (does not support 'z' coordinate)
+function Transform:ToWorldPoints(Points)
+	
+	local TransformedPoints = {}
+	
+	for i = 1, #Points, 2 do
+		
+		local x, y = Points[i], Points[i + 1]
+		
+		TransformedPoints[i] = self.x + self.Matrix[1][1] * x + self.Matrix[1][2] * y
+		TransformedPoints[i + 1] = self.y + self.Matrix[2][1] * x + self.Matrix[2][2] * y
+		
+	end
+	
+	if self.Parent then
+		
+		return self.Parent:ToWorldPoints(TransformedPoints)
+		
+	end
+	
+	return TransformedPoints
 	
 end
 
